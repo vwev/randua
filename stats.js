@@ -124,7 +124,13 @@ module.exports.engine = {
         }
     },
     'trident': function (info) {
-        return 'eeeck';
+        var major = info.browser.version.split('.')[0];
+        switch (major) {
+        case '10': return '6.0';
+        case '9':  return '5.0';
+        case '8':  return '4.0';
+        default:   return null;
+        }
     }
 };
 
@@ -224,7 +230,6 @@ module.exports.os = {
         },
         browser: {
             'chrome':   { usage: 0.34 },
-            'ie':       { usage: 0.32 },
             'firefox':  { usage: 0.23 },
             'safari':   { usage: 0.08 },
             'opera':    { usage: 0.03 }
@@ -240,7 +245,6 @@ module.exports.os = {
         },
         browser: {
             'chrome':   { usage: 0.34 },
-            'ie':       { usage: 0.32 },
             'firefox':  { usage: 0.23 },
             'safari':   { usage: 0.08 },
             'opera':    { usage: 0.03 }
@@ -253,7 +257,6 @@ module.exports.os = {
         },
         browser: {
             'chrome':   { usage: 0.34 },
-            'ie':       { usage: 0.32 },
             'firefox':  { usage: 0.23 },
             'safari':   { usage: 0.08 },
             'opera':    { usage: 0.03 }
@@ -309,7 +312,6 @@ module.exports.browser = {
             'windows':  { usage: 0.60 },
             'osx':      { usage: 0.20 },
             'linux':    { usage: 0.02 },
-            'ubuntu':   { usage: 0.02 },
             'freebsd':  { usage: 0.01 },
             'openbsd':  { usage: 0.01 },
             'android':  { usage: 0.085 },
@@ -331,7 +333,6 @@ module.exports.browser = {
             'windows':  { usage: 0.60 },
             'osx':      { usage: 0.20 },
             'linux':    { usage: 0.02 },
-            'ubuntu':   { usage: 0.02 },
             'freebsd':  { usage: 0.01 },
             'openbsd':  { usage: 0.01 },
             'android':  { usage: 0.085 },
@@ -342,6 +343,29 @@ module.exports.browser = {
             '32.0.1664.3': { usage: 0.25 },
             '6.0.416.0': { usage: 0.25}
         }
+    },
+    'ie': {
+        locale: 0.01,
+        engine: 'trident',
+        platform: {
+            'desktop':  { usage: 1.0 }
+        },
+        os: {
+            'windows':  { usage: 1.0 },
+        },
+        version: {
+            '10.0': { usage: 0.25 },
+            '9.0': { usage: 0.25 },
+            '8.0': { usage: 0.25 },
+            '6.0': { usage: 0.25 }
+        },
+        extra: {
+            // more subcategories should be required
+            'SLCC2; Media Center PC 6.0; InfoPath.3; MS-RTC LM 8; Zune 4.7':
+                { usage: 0.10 }
+            // none: 0.90
+        }
+
     },
     'android': {
         engine: 'webkit',

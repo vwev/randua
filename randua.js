@@ -15,9 +15,17 @@
 
 var stats = require('./stats');
 
-var randstat = function (obj) {
+var accumulate = function (obj) {
+    var total = 0;
+    for (var key in obj)
+        total += obj[key].usage;
+    return total;
+};
+
+// temporary, merge with randstat
+var randstat_total = function (obj, total) {
     var sum = 0,
-        rand = Math.random(),
+        rand = Math.random() * total,
         ret = null;
 
     for (var key in obj) {
@@ -30,6 +38,10 @@ var randstat = function (obj) {
 
     return ret;
 };
+
+var randstat = function (obj) {
+    return randstat_total(obj, accumulate(obj));
+}
 
 var uagen = function () {
     var platform, os, browser;
@@ -81,6 +93,7 @@ var uagen = function () {
         };
     };
 
+    // move to stats file, rename stats file
     var make_string = function (info) {
         var str = '';
 
@@ -88,9 +101,9 @@ var uagen = function () {
         case 'firefox':
             str += 'Mozilla/5.0 (';
             str += info.os.version;
-            str += '; ';
-            if (info.locale) str += info.locale + '; ';
-            str += 'rv:';
+            if (info.locale)
+                str += '; ' + info.locale;
+            str += '; rv:';
             str += info.browser.version;
             str += ') Gecko/';
             str += info.browser.engine;
@@ -109,6 +122,20 @@ var uagen = function () {
             break;
         case 'opera':
             // completely illogical
+            break;
+        case 'ie':
+            var major = info.browser.version.split('.')[0];
+            str += (major > 7) ? 'Mozilla/5.0' : 'Mozilla/4.0';
+            str += '(compatible; MSIE ';
+            str += info.browser.version;
+            str += '; ';
+            str += info.os.version;
+            if (info.browser.engine)
+                str += '; Trident/' + info.browser.engine;
+            if (info.browser.extra)
+                str += '; ' + info.browser.extra;
+            str += ')';
+            break;
         default:
             console.log(info);
             str = 'to be implemented';
@@ -168,6 +195,9 @@ var uagen = function () {
             info.browser.version = randstat(browser.version);
             info.browser.engine = stats.engine[browser.engine](info);
 
+            if (browser.extra)
+                info.browser.extra = randstat_total(browser.extra, 1.0);
+
             info.os = {};
             info.os.name = br.os;
             info.os.version = randstat(os.version);
@@ -184,11 +214,6 @@ var uagen = function () {
 
 var gen = uagen();
 // all firefox user agents(including mobile)
-gen.setBrowser('firefox');
-for (var i = 0; i < 4; i++) console.log(gen.generate());
+gen.setBrowser('ie');
+for (var i = 0; i < 10; i++) console.log(gen.generate());
 // only desktop firefox user agents
-gen.setPlatform('desktop');
-for (var i = 0; i < 4; i++) console.log(gen.generate());
-// only desktop/windows firefox user agents
-gen.setOs('windows');
-for (var i = 0; i < 4; i++) console.log(gen.generate());
